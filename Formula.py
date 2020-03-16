@@ -42,7 +42,7 @@ def compute_P(F):
 
 
 def compute_F(def_X, T, B, W):
-    f = [0] * len(def_X)
+    f = np.zeros((len(def_X), 3))
     for index in range(len(T)):
         i = def_X[T[index][0]]
         j = def_X[T[index][1]]
@@ -76,7 +76,7 @@ def compute_dP(F, dF):
 
 
 def compute_dF(def_X, dX, T, B, W):
-    df = [0] * len(def_X)
+    df = np.zeros((len(def_X), 3))
     for index in range(len(T)):
         i = def_X[T[index][0]]
         j = def_X[T[index][1]]

@@ -1,4 +1,5 @@
-""" All the physical formulae. Including Alg 1 and 2 in paper. """
+""" All the physical formulae. You are not expected to understand these. """
+""" ...unless you read the paper. """
 
 import numpy as np
 from numpy.linalg import inv, det
@@ -6,11 +7,11 @@ from numpy.linalg import inv, det
 from Operator import add
 
 
-MU = 1
-LAMBDA = 1
-GAMMA = 1
+MU = 0.1
+LAMBDA = 0.1
+GAMMA = 3
 DELTA_TIME = 1
-MASS = 100
+MASS = 10
 
 def precompute(X, T):
     B = []
@@ -43,7 +44,7 @@ def compute_P(F):
 
 def compute_F(def_X, T, B, W):
     f = np.zeros((len(def_X), 3))
-    for index in range(len(T)):
+    for index, t in enumerate(T):
         i = def_X[T[index][0]]
         j = def_X[T[index][1]]
         k = def_X[T[index][2]]
@@ -57,10 +58,18 @@ def compute_F(def_X, T, B, W):
         # FF.append([0,0,np.squeeze(F)[0][0]])
         H = - W[index] * P @ B[index].transpose()
         # h = np.squeeze(H)
-        f[T[index][0]] += H[0]
-        f[T[index][1]] += H[1]
-        f[T[index][2]] += H[2]
-        f[T[index][3]] += - H[0] - H[1] - H[2]
+        # f[T[index][0]] += H[0]
+        # f[T[index][1]] += H[1]
+        # f[T[index][2]] += H[2]
+        # f[T[index][3]] += - H[0] - H[1] - H[2]
+
+        h0 = np.array([H[0][0], H[1][0], H[2][0]])
+        h1 = np.array([H[0][1], H[1][1], H[2][1]])
+        h2 = np.array([H[0][2], H[1][2], H[2][2]])
+        f[T[index][0]] += h0
+        f[T[index][1]] += h1
+        f[T[index][2]] += h2
+        f[T[index][3]] += - h0 - h1 - h2
     return f
 
 
@@ -98,10 +107,18 @@ def compute_dF(def_X, dX, T, B, W):
         dP = compute_dP(F, dF)
         dH = - W[index] * dP @ B[index].transpose()
         
-        df[T[index][0]] += dH[0]
-        df[T[index][1]] += dH[1]
-        df[T[index][2]] += dH[2]
-        df[T[index][3]] += - dH[0] - dH[1] - dH[2]
+        # df[T[index][0]] += dH[0]
+        # df[T[index][1]] += dH[1]
+        # df[T[index][2]] += dH[2]
+        # df[T[index][3]] += - dH[0] - dH[1] - dH[2]
+
+        dh0 = np.array([dH[0][0], dH[1][0], dH[2][0]])
+        dh1 = np.array([dH[0][1], dH[1][1], dH[2][1]])
+        dh2 = np.array([dH[0][2], dH[1][2], dH[2][2]])
+        df[T[index][0]] += dh0
+        df[T[index][1]] += dh1
+        df[T[index][2]] += dh2
+        df[T[index][3]] += - dh0 - dh1 - dh2
 
     return df
 
@@ -110,8 +127,9 @@ def compute_dF(def_X, dX, T, B, W):
 def update_XV(def_X, T, V, B, W):
     Fe = compute_F(def_X, T, B, W)
     # Fd = - GAMMA * K(X*)V* = - GAMMA * df(dX=V)
-    Fd = - GAMMA * np.array(compute_dF(def_X, V, T, B, W))
-    F = Fe + Fd
+    # Fd = - GAMMA * np.array(compute_dF(def_X, V, T, B, W))
+    # F = Fe + Fd
+    F = Fe
     
     # Naive Implicit Euler
     for i in range(len(def_X)):

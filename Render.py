@@ -11,14 +11,15 @@ import cv2
 from Obj import serialize, SIZE
 
 DPI = 300
+FPS = 15
 
 def render(nodes, tetras, force=None, shape='CUBE', filename='x.png'):
     # npnodes = np.array(nodes)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim3d(-SIZE, SIZE*2)
-    ax.set_ylim3d(-SIZE, SIZE*2)
-    ax.set_zlim3d(-SIZE, SIZE*2)
+    ax.set_xlim3d(-0.5*SIZE, 1.5*SIZE)
+    ax.set_ylim3d(-0.5*SIZE, 1.5*SIZE)
+    ax.set_zlim3d(-0.5*SIZE, 1.5*SIZE)
 
     # Render nodes as dot cloud
     # xs = list(map(itemgetter(0), nodes))
@@ -30,7 +31,7 @@ def render(nodes, tetras, force=None, shape='CUBE', filename='x.png'):
     xs = [ n[0] for n in nodes ]
     ys = [ n[1] for n in nodes ]
     zs = [ n[2] for n in nodes ]
-    ax.scatter(xs=xs, ys=ys, zs=zs, s=1, color='cyan')
+    ax.scatter(xs=xs, ys=ys, zs=zs, s=1, color='turquoise', alpha=0.5)
     
 
     # xs = np.squeeze(npnodes[:, 0])
@@ -60,13 +61,13 @@ def render(nodes, tetras, force=None, shape='CUBE', filename='x.png'):
             xs = [ n[0] for n in edge ]
             ys = [ n[1] for n in edge ]
             zs = [ n[2] for n in edge ]
-            ax.plot(xs, ys, zs, color='blue')
+            ax.plot(xs, ys, zs, color='dodgerblue')
     if shape == 'SINGLE':
         for node_index in [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]:
             xs = [nodes[node_index[0]][0], nodes[node_index[1]][0]]
             ys = [nodes[node_index[0]][1], nodes[node_index[1]][1]]
             zs = [nodes[node_index[0]][2], nodes[node_index[1]][2]]
-            ax.plot(xs, ys, zs, color='blue')
+            ax.plot(xs, ys, zs, color='dodgerblue')
 
     # Render force
     if force is not None:
@@ -97,7 +98,7 @@ def make_video(filenames):
         size = (width, height)
         img_array.append(img)
     
-    out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'DIVX'), 8, size)
+    out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'DIVX'), FPS, size)
     
     for i in range(len(img_array)):
         out.write(img_array[i])

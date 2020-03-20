@@ -3,7 +3,7 @@
 
 import numpy as np
 
-SIZE = 1
+SIZE = 10
 
 def serialize(x, y, z):
     """ Given the position (x,y,z) of a node, 
@@ -61,7 +61,7 @@ def load_obj():
 
 # extend depth(z) by 50%
 def deform(nodes):
-    return [ (n[0], n[1], n[2]*1.5) for n in nodes]
+    return [ (n[0], n[1], n[2]*1.1) for n in nodes]
 
 
 """ The following functions are built for debugging. """

@@ -11,7 +11,7 @@ import cv2
 from Obj import serialize, SIZE
 
 DPI = 300
-FPS = 15
+FPS = 18
 
 def render(nodes, tetras, force=None, shape='CUBE', filename='x.png'):
     # npnodes = np.array(nodes)

@@ -4,8 +4,8 @@ from Render import render, make_video
 from Formula import *
 
 
-N_STEPS = 20 # number of time steps
-STEP_PER_FRAME = 4
+N_STEPS = 1000 # number of time steps
+STEP_PER_FRAME = 5
 
 if __name__ == "__main__":
 

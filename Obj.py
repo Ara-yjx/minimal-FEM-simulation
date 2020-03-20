@@ -61,7 +61,11 @@ def load_obj():
 
 # extend depth(z) by 50%
 def deform(nodes):
-    return [ (n[0], n[1], n[2]*1.1) for n in nodes]
+    # # Stretch z by 10%
+    # return [ (n[0], n[1], n[2]*1.1) for n in nodes]
+    
+    # move up 0.5
+    return [ (n[0], n[1], n[2] + SIZE*0.2) for n in nodes]
 
 
 """ The following functions are built for debugging. """

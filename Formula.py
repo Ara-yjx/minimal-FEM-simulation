@@ -138,15 +138,16 @@ def negative_V(V):
 
 
 def update_XV(def_X, T, V, B, W):
-    Fe = compute_F(def_X, T, B, W)
-    # Fd = - GAMMA * K(X*)V* = - GAMMA * df(dX=V)
-    Fd = - GAMMA * np.array(compute_dF(def_X, negative_V(V), T, B, W))
-    F = Fe + Fd
-    # F = Fe
+    # Fe = compute_F(def_X, T, B, W)
+    # # Fd = - GAMMA * K(X*)V* = - GAMMA * df(dX=V)
+    # Fd = - GAMMA * np.array(compute_dF(def_X, negative_V(V), T, B, W))
+    # F = Fe + Fd
+    # # F = Fe
     
     # Naive Implicit Euler
     for i in range(len(def_X)):
-        acceleration = F[i] / MASS
+        # acceleration = F[i] / MASS
+        acceleration = 0
         acceleration += GRAVITY
         # v' = v + dt * F / M
         V[i] = add(V[i], DELTA_TIME * acceleration)

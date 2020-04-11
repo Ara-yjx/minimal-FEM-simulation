@@ -49,3 +49,9 @@ Currently using
 **Implicit Euler** to update velocity and position.
 
 
+---
+
+
+TODO:
+in renderer, setting blit = False may make codes simpler
+but it's still buggy.

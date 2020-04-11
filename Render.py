@@ -2,104 +2,91 @@
 
 import os
 import matplotlib.pyplot as plt
+from matplotlib import animation
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import cv2
 
 # from operator import itemgetter
 
 from Obj import serialize, SIZE
 
 DPI = 300
+BITRATE = 1800
 FPS = 18
 
-def render(nodes, tetras, force=None, shape='CUBE', filename='x.png'):
-    # npnodes = np.array(nodes)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim3d(-0.5*SIZE, 1.5*SIZE)
-    ax.set_ylim3d(-0.5*SIZE, 1.5*SIZE)
-    ax.set_zlim3d(-0.5*SIZE, 1.5*SIZE)
+# Singleton pattern for plot and data
+result_data = []
+fig = plt.figure()
 
-    # Render nodes as dot cloud
-    # xs = list(map(itemgetter(0), nodes))
-    # ys = list(map(itemgetter(1), nodes))
-    # zs = list(map(itemgetter(2), nodes))
-    # xs = np.squeeze(npnodes[:, 0])
-    # ys = np.squeeze(npnodes[:, 1])
-    # zs = np.squeeze(npnodes[:, 2])
-    xs = [ n[0] for n in nodes ]
-    ys = [ n[1] for n in nodes ]
-    zs = [ n[2] for n in nodes ]
-    ax.scatter(xs=xs, ys=ys, zs=zs, s=1, color='turquoise', alpha=0.5)
-    
+ax = fig.add_subplot(111, projection='3d')
+ax.set_xlim3d(-0.4*SIZE, 1.4*SIZE)
+ax.set_ylim3d(-0.4*SIZE, 1.4*SIZE)
+ax.set_zlim3d(0, 1.4*SIZE)
 
-    # xs = np.squeeze(npnodes[:, 0])
-    # ys = np.squeeze(npnodes[:, 1])
-    # zs = np.squeeze(npnodes[:, 2])
-    # for x in range(SIZE+1):
-    #     index = serialize(x,0,0)
-    #     xs.append(nodes[index][0])
-    #     ys.append(nodes[index][1])
+node_plot = ax.scatter(xs=[], ys=[], zs=[], s=1, color='turquoise', alpha=0.5)
+
+
+def render_frame(frame_index):
+
+    # plt.cla()
+    ax.clear()
+
+
+    nodes = result_data[frame_index]["nodes"]
+    forces = result_data[frame_index]["forces"]
+
+    node_x = [ n[0] for n in nodes ]
+    node_y = [ n[1] for n in nodes ]
+    node_z = [ n[2] for n in nodes ]
+    # node_plot = ax.scatter(xs=node_x, ys=node_y, zs=node_z, s=1, color='turquoise', alpha=0.5)
+    # print(node_plot)
     
-    # Render edges
-    if shape == 'CUBE':
-        S = SIZE
-        edge00i = [ nodes[ serialize(0,0,i) ] for i in range(SIZE+1) ]
-        edge01i = [ nodes[ serialize(0,S,i) ] for i in range(SIZE+1) ]
-        edge10i = [ nodes[ serialize(S,0,i) ] for i in range(SIZE+1) ]
-        edge11i = [ nodes[ serialize(S,S,i) ] for i in range(SIZE+1) ]
-        edge0i0 = [ nodes[ serialize(0,i,0) ] for i in range(SIZE+1) ]
-        edge0i1 = [ nodes[ serialize(0,i,S) ] for i in range(SIZE+1) ]
-        edge1i0 = [ nodes[ serialize(S,i,0) ] for i in range(SIZE+1) ]
-        edge1i1 = [ nodes[ serialize(S,i,S) ] for i in range(SIZE+1) ]
-        edgei00 = [ nodes[ serialize(i,0,0) ] for i in range(SIZE+1) ]
-        edgei01 = [ nodes[ serialize(i,0,S) ] for i in range(SIZE+1) ]
-        edgei10 = [ nodes[ serialize(i,S,0) ] for i in range(SIZE+1) ]
-        edgei11 = [ nodes[ serialize(i,S,S) ] for i in range(SIZE+1) ]
-        for edge in [ edge00i, edge01i, edge10i, edge11i, edge0i0, edge0i1, edge1i0, edge1i1, edgei00, edgei01, edgei10, edgei11]:
-            xs = [ n[0] for n in edge ]
-            ys = [ n[1] for n in edge ]
-            zs = [ n[2] for n in edge ]
-            ax.plot(xs, ys, zs, color='dodgerblue')
-    if shape == 'SINGLE':
-        for node_index in [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]:
-            xs = [nodes[node_index[0]][0], nodes[node_index[1]][0]]
-            ys = [nodes[node_index[0]][1], nodes[node_index[1]][1]]
-            zs = [nodes[node_index[0]][2], nodes[node_index[1]][2]]
-            ax.plot(xs, ys, zs, color='dodgerblue')
+    node_plot.set_data((node_x, node_y))
+    node_plot.set_3d_properties(node_z)
+
+    S = SIZE
+    edge00i = [ nodes[ serialize(0,0,i) ] for i in range(SIZE+1) ]
+    edge01i = [ nodes[ serialize(0,S,i) ] for i in range(SIZE+1) ]
+    edge10i = [ nodes[ serialize(S,0,i) ] for i in range(SIZE+1) ]
+    edge11i = [ nodes[ serialize(S,S,i) ] for i in range(SIZE+1) ]
+    edge0i0 = [ nodes[ serialize(0,i,0) ] for i in range(SIZE+1) ]
+    edge0i1 = [ nodes[ serialize(0,i,S) ] for i in range(SIZE+1) ]
+    edge1i0 = [ nodes[ serialize(S,i,0) ] for i in range(SIZE+1) ]
+    edge1i1 = [ nodes[ serialize(S,i,S) ] for i in range(SIZE+1) ]
+    edgei00 = [ nodes[ serialize(i,0,0) ] for i in range(SIZE+1) ]
+    edgei01 = [ nodes[ serialize(i,0,S) ] for i in range(SIZE+1) ]
+    edgei10 = [ nodes[ serialize(i,S,0) ] for i in range(SIZE+1) ]
+    edgei11 = [ nodes[ serialize(i,S,S) ] for i in range(SIZE+1) ]
+    for edge in [ edge00i, edge01i, edge10i, edge11i, edge0i0, edge0i1, edge1i0, edge1i1, edgei00, edgei01, edgei10, edgei11 ]:
+        edge_x = [ n[0] for n in edge ]
+        edge_y = [ n[1] for n in edge ]
+        edge_z = [ n[2] for n in edge ]
+        ax.plot(edge_x, edge_y, edge_z, color='dodgerblue')
 
     # Render force
-    if force is not None:
-        xs = [ n[0] for n in nodes ]
-        ys = [ n[1] for n in nodes ]
-        zs = [ n[2] for n in nodes ]
-        us = [ f[0] for f in force ]
-        vs = [ f[1] for f in force ]
-        ws = [ f[2] for f in force ]
-        ax.quiver(xs, ys, zs, us, vs, ws)
-
-
-    if filename[-4:] != '.png':
-        filename += '.png'
-    plt.savefig(filename, dpi=DPI)
+    if forces is not None:
+        us = [ f[0] for f in forces ]
+        vs = [ f[1] for f in forces ]
+        ws = [ f[2] for f in forces ]
+        ax.quiver(node_x, node_y, node_z, us, vs, ws)
     
-    plt.close(fig)
-    return filename
+    return ax
+
+
+def render(result):
+    global result_data
+    result_data = result
+    anim = animation.FuncAnimation(fig, render_frame, frames=len(result_data), blit=True)
+    from matplotlib.animation import FFMpegWriter
+    writer = FFMpegWriter(fps=FPS, codec="mpeg4", bitrate=BITRATE) # choose mpeg4 encoder for maximum compatibility
+    anim.save("test.mp4", writer=writer, dpi=DPI)
 
 
 
-def make_video(filenames):
-    video_name = os.path.join('out', 'out.avi')
-    img_array = []
-    for filename in filenames:
-        img = cv2.imread(filename)
-        height, width, layers = img.shape
-        size = (width, height)
-        img_array.append(img)
-    
-    out = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'DIVX'), FPS, size)
-    
-    for i in range(len(img_array)):
-        out.write(img_array[i])
-    out.release()
+# def test_render():
+
+
+# if __name__ == "__main__":
+#     test_render()
+
+

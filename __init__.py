@@ -4,8 +4,17 @@ from Render import render, make_video
 from Formula import *
 
 
-N_STEPS = 1000 # number of time steps
-STEP_PER_FRAME = 5
+# Time configurations
+# 
+# in the simulation world, simulate a period of 1000 seconds
+DURATION = 1200
+# in the simulation world, upgrade the object state every 1 second
+REFRESH_INTERVAL = 1
+# in the real world (output video), time is 10 times as fast as the simulation world
+PLAYBACK_RATE = 100
+# in the real world (output video), the object is rendered 20 times every second (frames per second)
+FPS = 20
+
 
 if __name__ == "__main__":
 
@@ -20,8 +29,6 @@ if __name__ == "__main__":
     # verify_volume(ref_X, Tetras) # for debug
 
     def_X = deform(ref_X)
-    # render(ref_X, Tetras, shape=shape, filename='ref')
-    # render(def_X, Tetras, shape=shape, filename='def')
 
     B, W = precompute(ref_X, Tetras)
     
@@ -29,24 +36,25 @@ if __name__ == "__main__":
     # V = [[0,0,0]] * len(ref_X)
     V = np.zeros((len(ref_X), 3))
 
-    filenames = []
-
-    for step in range(N_STEPS):
+    now = 0.0 # current time
+    frame_counter = 0
+    rendered_images = []
+    while now < DURATION:
 
         # Update config (X) and new velocities (V)
         # return F for debugging
         F = update_XV(def_X, Tetras, V, B, W)
+        
+        # Render to image file
+        video_sample_time = frame_counter / FPS * PLAYBACK_RATE # the time (in the simulation world) from which next frame is rendered
+        if now >= video_sample_time:
+            print("Rendering frame", frame_counter, "/", int(DURATION / REFRESH_INTERVAL / PLAYBACK_RATE * FPS))
+            filename = os.path.join("out", str(frame_counter)+".png")
+            render(def_X, Tetras, filename=filename)
+            rendered_images.append(filename)
+            frame_counter += 1
 
-        if step % STEP_PER_FRAME == 0:
-            print('Rendering ', step, '/', N_STEPS)
-            filename = render(def_X, Tetras, F, shape, os.path.join('out', str(step)))
-            filenames.append(filename)
+        now += REFRESH_INTERVAL
 
-    make_video(filenames)
-
-
-    
-    
-
-
-
+    print("Generating video...")
+    make_video(rendered_images, os.path.join("out", "out.avi"), FPS)

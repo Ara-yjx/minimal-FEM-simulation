@@ -1,6 +1,5 @@
 """ Object loading/creation and initial deformation. """
 
-
 import numpy as np
 
 SIZE = 10
@@ -55,20 +54,20 @@ def load_obj():
                 # |/          |/     
                 #  -----------
 
-    return np.array(nodes), np.array(tetras), 'CUBE'
+    return np.array(nodes), np.array(tetras)
 
 
 
 # extend depth(z) by 50%
 def deform(nodes):
-    # # Stretch z by 10%
-    # return [ (n[0], n[1], n[2]*1.1) for n in nodes]
+    # # Stretch +z direction by 10%
+    # return np.array([ (n[0], n[1], n[2]*1.1) for n in nodes])
     
     # move up 0.5
-    return [ (n[0], n[1], n[2] + SIZE*0.2) for n in nodes]
+    return np.array([ (n[0], n[1], n[2] + SIZE*0.2) for n in nodes ])
 
 
-""" The following functions are built for debugging. """
+""" The following functions are for debugging. """
 
 
 from Operator import sub, dot, cross
@@ -87,4 +86,5 @@ def verify_volume(nodes, tetras):
 def load_single():
     nodes = np.array([[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
     tetras = np.array([[0,1,2,3]])
-    return nodes, tetras, 'SINGLE'
+    SIZE = 1
+    return nodes, tetras

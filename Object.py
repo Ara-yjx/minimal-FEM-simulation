@@ -10,7 +10,7 @@ def serialize(x, y, z):
     return x*(SIZE+1)**2 + y*(SIZE+1) + z # fuck. power is **, not ^
 
 
-def load_obj():
+def load_object():
     """ Create a cube object with edge length of SIZE. 
         Each 1*1*1 cube are divided into 5 tetrahedrals.
         Thus (SIZE+1)^3 nodes and 5*SIZE^3 tetrahedrals in total. """
@@ -39,32 +39,33 @@ def load_obj():
                 tetras.append([node011, node101, node111, node110])
                 tetras.append([node000, node110, node011, node101])
 
-                #        -----------
-                #      / \         /|
-                #     /   \       / |
-                #    /     \     /  |
-                #   /       \   /   |
-                #  /         \ /    |
-                #  -----------  \   |
-                # |          /|   \  
-                # |        /  |    / 
-                # |      /    |   /   
-                # |    /      |  /    
-                # |  /        | /    
-                # |/          |/     
-                #  -----------
+                #       011 ----------- 111
+                #         / \         /|
+                #        /   \       / |
+                #       /     \     /  |
+                #      /       \   /   |
+                #     /         \ /    |
+                # 001 ----------101\_  |
+                #    |          /|   \_ 110
+                #    |        /  |    / 
+                #    |      /    |   /   
+                #    |    /      |  /    
+                #    |  /        | /    
+                #    |/          |/     
+                # 000 -----------100  
 
     return np.array(nodes), np.array(tetras)
 
 
+class Deform:
 
-# extend depth(z) by 50%
-def deform(nodes):
-    # # Stretch +z direction by 10%
-    # return np.array([ (n[0], n[1], n[2]*1.1) for n in nodes])
-    
-    # move up 0.5
-    return np.array([ (n[0], n[1], n[2] + SIZE*0.2) for n in nodes ])
+    def stretch_z(nodes, extent=0.2):
+        """ Stretch +z direction by <extent> """
+        return np.array([ (n[0], n[1], n[2]*(1+extent)) for n in nodes])
+        
+    def translate_z(nodes, extent=0.2):        
+        """ Move +z direction by <extent> """
+        return np.array([ (n[0], n[1], n[2] + SIZE*extent) for n in nodes ])
 
 
 """ The following functions are for debugging. """

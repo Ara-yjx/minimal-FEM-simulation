@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cv2
-from Obj import serialize, SIZE
+from Object import serialize, SIZE
 
 
 DPI = 300

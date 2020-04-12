@@ -1,5 +1,5 @@
 import os
-from Obj import load_obj, load_single, deform, verify_volume
+from Object import load_object, Deform
 from Render import render, make_video
 from Formula import *
 
@@ -19,19 +19,18 @@ FPS = 25
 if __name__ == "__main__":
     
     # 1. Load Object
-    # X: array[][coord, 3]
-    #     Configuration(position of nodes). Each element correseponds to a node, and is a 3-element array that stores the node's position.
-    # T: array[][node#, 4]
+    # X: array[#nodes][3]
+    #     Position of nodes ("configuration"). Each element correseponds to a node, and is a 3-element array that stores the node's position.
+    # T: array[#tetras][4]
     #     Tetrahedral mesh. Each element correspond to a tetrahedral, and is a 4-element array that stores the INDEX of the nodes (in X) of the tetrahedral.
-    X, T = load_obj()
+    X, T = load_object()
     print(len(X), " nodes.")
     print(len(T), " tetrahedrals.")
     
     # 2. Precomputation and initialization
     B, W = precompute(X, T)
-    X = deform(X)
-    # Initialize velocities to 0
-    V = np.zeros((len(X), 3))
+    X = Deform.translate_z(X, 0.2)
+    V = np.zeros((len(X), 3)) # initialize velocities to 0
 
     # 3. Main update loop
     now = 0 # current time
@@ -39,7 +38,7 @@ if __name__ == "__main__":
     rendered_images = [] # filenames of rendered images
     while now < DURATION:
 
-        # Update config (X) and new velocities (V)
+        # Update positions (X) and velocities (V)
         # return F for debugging
         F = update_XV(X, T, V, B, W, DELTA_TIME)
         
